@@ -46,7 +46,7 @@ jobs:
           #eromLogin button{width:100%;margin-top:18px;border:0;border-radius:11px;padding:14px;background:#c3ccd9;color:#080a0f;font-weight:800;font-size:16px}
           #eromLogin .error{min-height:18px;color:#ff8585;font-size:13px;margin-top:12px}
           </style>
-          <section id="eromLogin" aria-label="Login EROM BOX"><div class="panel"><div class="brand">EROM BOX</div><p>Acesse sua biblioteca pessoal offline.</p><form id="eromLoginForm" autocomplete="on"><label for="eromLoginUser">Usuário ou e-mail</label><input id="eromLoginUser" name="username" autocomplete="username" autocapitalize="none" required placeholder="Erom ou erom@erom.com"><label for="eromLoginPass">Senha</label><input id="eromLoginPass" name="password" type="password" autocomplete="current-password" required placeholder="Digite sua senha"><button type="submit">Entrar</button><div id="eromLoginError" class="error" role="alert"></div></form></div></section>
+          <section id="eromLogin" aria-label="Login EROM BOX"><div class="panel"><div class="brand">EROM BOX</div><p>Acesse sua biblioteca pessoal offline.</p><form id="eromLoginForm" autocomplete="on"><label for="eromLoginUser">Usuário</label><input id="eromLoginUser" name="username" autocomplete="username" autocapitalize="none" required placeholder="Digite seu usuário"><label for="eromLoginPass">Senha</label><input id="eromLoginPass" name="password" type="password" autocomplete="current-password" required placeholder="Digite sua senha"><button type="submit">Entrar</button><div id="eromLoginError" class="error" role="alert"></div></form></div></section>
           <script>
           (function(){
             var body=document.body, key='erombox-offline-auth-session';
