@@ -51,7 +51,7 @@ jobs:
           (function(){
             var body=document.body, key='erombox-offline-auth-session';
             function unlock(){body.classList.remove('erom-auth-locked');var box=document.getElementById('eromLogin');if(box)box.remove();}
-            try{if(sessionStorage.getItem(key)==='ok'){unlock();return;}}catch(e){}
+            var hadSession=false;try{hadSession=sessionStorage.getItem(key)==='ok';}catch(e){}\n            setTimeout(function(){var splash=document.getElementById('eromLoginSplash');if(splash)splash.remove();if(hadSession)unlock();},3200);
             document.getElementById('eromLoginForm').addEventListener('submit',function(e){
               e.preventDefault();
               var u=document.getElementById('eromLoginUser').value.trim().toLowerCase();
