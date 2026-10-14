@@ -27,12 +27,54 @@ jobs:
           test -f EROM-BOX-OFFLINE-SEM-SERVIDOR.zip
           unzip -q EROM-BOX-OFFLINE-SEM-SERVIDOR.zip -d extracted
           test -f extracted/EROM-BOX-OFFLINE/android/app/build.gradle
+      - name: Add offline login screen
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("extracted/EROM-BOX-OFFLINE/android/app/src/main/assets/site/index.html")
+          s = p.read_text(encoding="utf-8")
+          marker = '<body>'
+          login = r'''<body class="erom-auth-locked">
+          <style>
+          body.erom-auth-locked > *:not(#eromLogin){display:none!important}
+          #eromLogin{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:24px;background:#080a0f;color:#f5f7fb;font-family:system-ui,-apple-system,sans-serif}
+          #eromLogin .panel{width:100%;max-width:380px;background:#111722;border:1px solid #2b3444;border-radius:22px;padding:28px;box-sizing:border-box;box-shadow:0 20px 70px #0008}
+          #eromLogin .brand{font-size:26px;font-weight:850;letter-spacing:2px;color:#d0d7e3;margin-bottom:8px}
+          #eromLogin p{color:#aab4c4;margin:0 0 22px}
+          #eromLogin label{display:block;font-size:13px;color:#c5ccda;margin:14px 0 6px}
+          #eromLogin input{display:block;width:100%;box-sizing:border-box;padding:13px 14px;border-radius:11px;border:1px solid #394456;background:#080d15;color:#fff;font-size:16px;outline:none}
+          #eromLogin button{width:100%;margin-top:18px;border:0;border-radius:11px;padding:14px;background:#c3ccd9;color:#080a0f;font-weight:800;font-size:16px}
+          #eromLogin .error{min-height:18px;color:#ff8585;font-size:13px;margin-top:12px}
+          </style>
+          <section id="eromLogin" aria-label="Login EROM BOX"><div class="panel"><div class="brand">EROM BOX</div><p>Acesse sua biblioteca pessoal offline.</p><form id="eromLoginForm" autocomplete="on"><label for="eromLoginUser">Usuário ou e-mail</label><input id="eromLoginUser" name="username" autocomplete="username" autocapitalize="none" required placeholder="Erom ou erom@erom.com"><label for="eromLoginPass">Senha</label><input id="eromLoginPass" name="password" type="password" autocomplete="current-password" required placeholder="Digite sua senha"><button type="submit">Entrar</button><div id="eromLoginError" class="error" role="alert"></div></form></div></section>
+          <script>
+          (function(){
+            var body=document.body, key='erombox-offline-auth-session';
+            function unlock(){body.classList.remove('erom-auth-locked');var box=document.getElementById('eromLogin');if(box)box.remove();}
+            try{if(sessionStorage.getItem(key)==='ok'){unlock();return;}}catch(e){}
+            document.getElementById('eromLoginForm').addEventListener('submit',function(e){
+              e.preventDefault();
+              var u=document.getElementById('eromLoginUser').value.trim().toLowerCase();
+              var p=document.getElementById('eromLoginPass').value;
+              if((u==='erom'||u==='erom@erom.com')&&p==='6592'){
+                try{sessionStorage.setItem(key,'ok');}catch(e){}
+                unlock();
+              }else{document.getElementById('eromLoginError').textContent='Usuário, e-mail ou senha incorretos.';}
+            });
+          })();
+          </script>'''
+          if marker not in s:
+              raise SystemExit("Não foi possível localizar o início do body no HTML.")
+          s = s.replace(marker, login, 1)
+          p.write_text(s, encoding="utf-8")
+          print("Tela de login offline adicionada.")
+          PY
       - name: Build debug APK
         run: cd extracted/EROM-BOX-OFFLINE/android && gradle --no-daemon assembleDebug
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: EROM-BOX-OFFLINE-APK
+          name: EROM-BOX-OFFLINE-LOGIN-APK
           path: extracted/EROM-BOX-OFFLINE/android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
